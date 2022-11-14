@@ -1,0 +1,24 @@
+---
+- name: Install Telegraf on Ubuntu
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Telegraf Agent - Ubuntu
+      apt:
+        deb: https://dl.influxdata.com/telegraf/releases/telegraf_1.18.1-1_amd64.deb
+    - name: Copy telegraf config - Ubuntu
+      copy:
+        src: config/telegraf.conf
+        dest: /etc/telegraf/telegraf.conf
+      notify:
+      - Restart Telegraf
+    - name: Start Telegraf - Ubuntu
+      service:
+        name: telegraf
+        state: started
+        enabled: yes
+  handlers:
+    - name: Restart Telegraf
+      ansible.builtin.service:
+        name: telegraf
+        state: restarted
